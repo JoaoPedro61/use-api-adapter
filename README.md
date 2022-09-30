@@ -10,20 +10,305 @@
 npm install --save use-api-adapter
 ```
 
+## Description
+
+Simple hook, which controls the states of a request to a RestFull API,
+with support for canceling requests, using `signal` Can be used
+with `axios`, `fetch` and/or `XMLHttpRequest`, the latter
+being wrapped in a promise structure.
+
 ## Usage
 
-```tsx
-import React, { Component } from 'react'
+---
 
-import MyComponent from 'use-api-adapter'
-import 'use-api-adapter/dist/index.css'
+### Basic example of use using `axios`:
 
-class Example extends Component {
-  render() {
-    return <MyComponent />
-  }
-}
+```typescriptreact
+import React, { useCallback } from 'react';
+import { useApiAdapter } from 'use-api-adapter';
+import axios from 'axios';
+
+// Declare handler to invoque a request:
+const getHandler => axios.get("/path/to/your/data").then(r => r.data);
+
+const ExampleComponent = () => {
+  const {
+    loading,
+    data,
+    error,
+    request,
+  } = useApiAdapter(getHandler);
+
+  const execute = useCallback(() => {
+    request();
+  }, []);
+
+  return (
+    <div>
+      { loading ? 'loading...' : error ? error : data }
+      <button onclick={execute} disabled={loading}>
+        Execute
+      </button>
+    </div>
+  )
+};
+
 ```
+
+---
+
+### Basic example of use using `fetch`:
+
+```typescriptreact
+import React, { useCallback } from 'react';
+import { useApiAdapter } from 'use-api-adapter';
+
+// Declare handler to invoque a request:
+const getHandler => fetch("/path/to/your/data");
+
+const ExampleComponent = () => {
+  const {
+    loading,
+    data,
+    error,
+    request,
+  } = useApiAdapter(getHandler);
+
+  const execute = useCallback(() => {
+    request();
+  }, []);
+
+  return (
+    <div>
+      { loading ? 'loading...' : error ? error : data }
+      <button onclick={execute} disabled={loading}>
+        Execute
+      </button>
+    </div>
+  )
+};
+
+```
+
+---
+
+### Basic example of use using `XMLHttpRequest`:
+
+```typescriptreact
+import React, { useCallback } from 'react';
+import { useApiAdapter } from 'use-api-adapter';
+
+// Declare handler to invoque a request:
+const getHandler => new Promise((resolver, reject) => {
+  const req = new XMLHttpRequest();
+  req.addEventListener("load", () => resolver(req.responseText));
+  req.addEventListener("error", () => reject(req.responseText));
+  req.open("GET", "/path/to/your/data");
+  req.send();
+});
+
+const ExampleComponent = () => {
+  const {
+    loading,
+    data,
+    error,
+    request,
+  } = useApiAdapter(getHandler);
+
+  const execute = useCallback(() => {
+    request();
+  }, []);
+
+  return (
+    <div>
+      { loading ? 'loading...' : error ? error : data }
+      <button onclick={execute} disabled={loading}>
+        Execute
+      </button>
+    </div>
+  )
+};
+
+```
+
+---
+
+### Basic example of use using `axios` and request cancelation:
+
+We are using `axios` for this example but you can use with others ways
+
+```typescriptreact
+import React, { useCallback } from 'react';
+import { useApiAdapter } from 'use-api-adapter';
+import axios from 'axios';
+
+// Declare handler to invoque a request:
+const getHandler = () => {
+  const controller = new AbortController();
+
+  return [
+    () => axios.get("/path/to/your/data", {
+      signal: controller.signal,
+    }).then(r => r.data),
+    (reason: string) => controller.abort(reason),
+  ]
+};
+
+const ExampleComponent = () => {
+  const {
+    loading,
+    data,
+    error,
+    request,
+    cancel,
+  } = useApiAdapter(getHandler);
+
+  const execute = useCallback(() => {
+    request();
+  }, []);
+
+  return (
+    <div>
+      { loading ? 'loading...' : error ? error : data }
+      <button onclick={execute} disabled={loading}>
+        Execute
+      </button>
+      <button onclick={() => cancel('aborted by user')} disabled={!loading}>
+        Cancel
+      </button>
+    </div>
+  )
+};
+
+```
+
+---
+
+### Basic example of use using `axios` and request cancelation, sending filters to a API:
+
+We are using `axios` for this example but you can use with others ways
+
+```typescriptreact
+import React, { useCallback } from 'react';
+import { useApiAdapter } from 'use-api-adapter';
+import axios from 'axios';
+
+inteface Params {
+  limit: number,
+  offset: number,
+}
+
+// Declare handler to invoque a request:
+const getHandler = (params: Params) => {
+  const controller = new AbortController();
+
+  return [
+    () => axios.get("/path/to/your/data", {
+      signal: controller.signal,
+      params: params,
+    }).then(r => r.data),
+    (reason: string) => controller.abort(reason),
+  ]
+};
+
+const ExampleComponent = () => {
+  const {
+    loading,
+    data,
+    error,
+    request,
+    cancel,
+  } = useApiAdapter(getHandler);
+
+  const execute = useCallback(() => {
+    request({
+      limit: 1000,
+      offset: 0
+    });
+  }, []);
+
+  return (
+    <div>
+      { loading ? 'loading...' : error ? error : data }
+      <button onclick={execute} disabled={loading}>
+        Execute
+      </button>
+      <button onclick={() => cancel('aborted by user')} disabled={!loading}>
+        Cancel
+      </button>
+    </div>
+  )
+};
+
+```
+
+---
+
+### Basic example of use using `axios` and request cancelation, sending filters to a API, using listenners:
+
+We are using `axios` for this example but you can use with others ways
+
+```typescriptreact
+import React, { useCallback } from 'react';
+import { useApiAdapter } from 'use-api-adapter';
+import axios from 'axios';
+
+inteface Params {
+  limit: number,
+  offset: number,
+}
+
+// Declare handler to invoque a request:
+const getHandler = (params: Params) => {
+  const controller = new AbortController();
+
+  return [
+    () => axios.get("/path/to/your/data", {
+      signal: controller.signal,
+      params: params,
+    }).then(r => r.data),
+    (reason: string) => controller.abort(reason),
+  ]
+};
+
+const ExampleComponent = () => {
+  const {
+    loading,
+    data,
+    error,
+    request,
+    cancel,
+  } = useApiAdapter(getHandler, {
+    onCanceled: () => console.log('onCanceled'),
+    onResponse: () => console.log('onResponse'),
+    onFailure: () => console.log('onFailure'),
+    onRequestStart: () => console.log('onRequestStart'),
+    onRequestEnd: () => console.log('onRequestEnd'),
+  });
+
+  const execute = useCallback(() => {
+    request({
+      limit: 1000,
+      offset: 0
+    });
+  }, []);
+
+  return (
+    <div>
+      { loading ? 'loading...' : error ? error : data }
+      <button onclick={execute} disabled={loading}>
+        Execute
+      </button>
+      <button onclick={() => cancel('aborted by user')} disabled={!loading}>
+        Cancel
+      </button>
+    </div>
+  )
+};
+
+```
+
+---
 
 ## License
 
