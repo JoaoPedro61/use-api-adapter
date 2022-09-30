@@ -23,7 +23,7 @@ being wrapped in a promise structure.
 
 ### Basic example of use using `axios`:
 
-```typescriptreact
+```tsx
 import React, { useCallback } from 'react';
 import { useApiAdapter } from 'use-api-adapter';
 import axios from 'axios';
@@ -59,7 +59,7 @@ const ExampleComponent = () => {
 
 ### Basic example of use using `fetch`:
 
-```typescriptreact
+```tsx
 import React, { useCallback } from 'react';
 import { useApiAdapter } from 'use-api-adapter';
 
@@ -94,7 +94,7 @@ const ExampleComponent = () => {
 
 ### Basic example of use using `XMLHttpRequest`:
 
-```typescriptreact
+```tsx
 import React, { useCallback } from 'react';
 import { useApiAdapter } from 'use-api-adapter';
 
@@ -137,7 +137,7 @@ const ExampleComponent = () => {
 
 We are using `axios` for this example but you can use with others ways
 
-```typescriptreact
+```tsx
 import React, { useCallback } from 'react';
 import { useApiAdapter } from 'use-api-adapter';
 import axios from 'axios';
@@ -188,7 +188,7 @@ const ExampleComponent = () => {
 
 We are using `axios` for this example but you can use with others ways
 
-```typescriptreact
+```tsx
 import React, { useCallback } from 'react';
 import { useApiAdapter } from 'use-api-adapter';
 import axios from 'axios';
@@ -248,7 +248,7 @@ const ExampleComponent = () => {
 
 We are using `axios` for this example but you can use with others ways
 
-```typescriptreact
+```tsx
 import React, { useCallback } from 'react';
 import { useApiAdapter } from 'use-api-adapter';
 import axios from 'axios';
